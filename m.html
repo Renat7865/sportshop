@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPORTLIFE</title>
+    <style>
+        :root { --primary: #ff5722; --primary-dark: #e64a19; --dark: #1a1a2e; --gray: #f5f5f5; --text: #333; --border: #e0e0e0; --white: #fff; --discount: #d32f2f; --star: #ffc107; --shadow: 0 4px 20px rgba(0,0,0,0.08); --shadow-hover: 0 8px 30px rgba(0,0,0,0.15); --radius: 12px; --transition: 0.3s ease; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--gray); color: var(--text); line-height: 1.5; }
+        .container { max-width: 1280px; margin: 0 auto; padding: 0 20px; }
+        .header { background: var(--white); padding: 15px 0; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .header .container { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+        .header__logo { font-size: 28px; font-weight: 900; color: var(--dark); text-decoration: none; }
+        .header__logo span { color: var(--primary); }
+        .header__search { flex: 1; min-width: 250px; max-width: 500px; display: flex; border: 2px solid var(--border); border-radius: 50px; overflow: hidden; }
+        .header__search input { flex: 1; padding: 12px 20px; border: none; outline: none; font-size: 15px; }
+        .header__search button { background: var(--primary); color: #fff; border: none; padding: 12px 20px; cursor: pointer; font-size: 16px; }
+        .header__icons { display: flex; gap: 20px; font-size: 24px; cursor: pointer; }
+        .header__icon { position: relative; }
+        .badge { position: absolute; top: -8px; right: -12px; background: var(--primary); color: #fff; font-size: 11px; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .nav { background: var(--white); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); position: sticky; top: 75px; z-index: 999; }
+        .nav__list { display: flex; list-style: none; overflow-x: auto; }
+        .nav__item { position: relative; white-space: nowrap; }
+        .nav__link { display: block; padding: 14px 22px; color: var(--text); text-decoration: none; font-weight: 500; cursor: pointer; border-bottom: 3px solid transparent; }
+        .nav__link:hover, .nav__link.active { color: var(--primary); border-bottom-color: var(--primary); }
+        .nav__link--sale { color: var(--discount); font-weight: 700; }
+        .hero { background: linear-gradient(135deg, #1a1a2e, #16213e); color: #fff; padding: 60px 0; margin-bottom: 30px; text-align: center; }
+        .hero h1 { font-size: 48px; }
+        .hero h1 span { color: var(--primary); }
+        .btn { display: inline-block; padding: 14px 32px; border-radius: 50px; font-weight: 600; text-decoration: none; cursor: pointer; border: none; }
+        .btn--primary { background: var(--primary); color: #fff; }
+        .btn--outline { background: transparent; color: #fff; border: 2px solid rgba(255,255,255,0.5); margin-left: 10px; }
+        .section { margin-bottom: 40px; }
+        .section__title { font-size: 26px; font-weight: 800; margin-bottom: 25px; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
+        .product-card { background: var(--white); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); transition: all var(--transition); cursor: pointer; }
+        .product-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-4px); }
+        .product-card__badge { position: absolute; top: 12px; left: 12px; display: flex; flex-direction: column; gap: 5px; }
+        .badge-discount { background: var(--discount); color: #fff; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+        .badge-new { background: #4caf50; color: #fff; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+        .product-card__image { height: 240px; overflow: hidden; background: #fafafa; position: relative; }
+        .product-card__image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .product-card:hover .product-card__image img { transform: scale(1.05); transition: transform 0.3s; }
+        .product-card__body { padding: 15px; }
+        .product-card__title { font-weight: 600; margin-bottom: 8px; }
+        .product-card__price { display: flex; align-items: center; gap: 10px; }
+        .product-card__price-current { font-size: 20px; font-weight: 700; color: var(--dark); }
+        .product-card__price-old { font-size: 14px; color: #999; text-decoration: line-through; }
+        .product-card__btn { display: block; width: 100%; padding: 12px; background: var(--primary); color: #fff; border: none; font-weight: 600; cursor: pointer; font-size: 15px; }
+        .cart-sidebar { position: fixed; top: 0; right: -420px; width: 400px; height: 100vh; background: #fff; z-index: 2000; transition: right var(--transition); box-shadow: -5px 0 30px rgba(0,0,0,0.2); padding: 20px; overflow-y: auto; }
+        .cart-sidebar.active { right: 0; }
+        .cart-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1999; display: none; }
+        .cart-overlay.active { display: block; }
+        .footer { background: var(--dark); color: #ccc; padding: 50px 20px; margin-top: 60px; text-align: center; }
+        .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 14px 28px; border-radius: 50px; z-index: 3000; opacity: 0; transition: opacity 0.4s; }
+        .toast.show { opacity: 1; }
+        @media (max-width: 768px) { .product-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); } .product-card__image { height: 160px; font-size: 60px; } }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="container">
+            <a href="#" class="header__logo">SPORT<span>LIFE</span></a>
+            <div class="header__search">
+                <input type="text" id="searchInput" placeholder="Поиск товаров...">
+                <button onclick="searchProducts()">🔍</button>
+            </div>
+            <div class="header__icons">
+                <span>👤</span>
+                <span>❤️</span>
+                <span class="header__icon" onclick="toggleCart()">🛒<span class="badge" id="cartCount">0</span></span>
+            </div>
+        </div>
+    </header>
+
+    <nav class="nav">
+        <div class="container">
+            <ul class="nav__list">
+                <li class="nav__item"><a class="nav__link active" onclick="showAll()">Главная</a></li>
+                <li class="nav__item"><a class="nav__link" onclick="filter('shoes')">👟 Обувь</a></li>
+                <li class="nav__item"><a class="nav__link" onclick="filter('pants')">👖 Штаны</a></li>
+                <li class="nav__item"><a class="nav__link" onclick="filter('tops')">👕 Верх</a></li>
+                <li class="nav__item"><a class="nav__link" onclick="filter('accessories')">🎒 Аксессуары</a></li>
+                <li class="nav__item"><a class="nav__link nav__link--sale" onclick="filter('sale')">🔥 АКЦИИ</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <h1>МЕГА <span>РАСПРОДАЖА</span></h1>
+        <p>Скидки до 70% на спортивные товары</p>
+        <a class="btn btn--primary" onclick="filter('sale')">Смотреть ⚡</a>
+        <a class="btn btn--outline" onclick="filter('sale')">Все акции</a>
+    </section>
+
+    <div class="container">
+        <section class="section"><h2 class="section__title">👟 Обувь</h2><div class="product-grid" id="shoesGrid"></div></section>
+        <section class="section"><h2 class="section__title">👖 Штаны</h2><div class="product-grid" id="pantsGrid"></div></section>
+        <section class="section"><h2 class="section__title">👕 Верх</h2><div class="product-grid" id="topsGrid"></div></section>
+        <section class="section"><h2 class="section__title">🎒 Аксессуары</h2><div class="product-grid" id="accGrid"></div></section>
+    </div>
+
+    <footer class="footer"><p>© 2026 SPORTLIFE</p></footer>
+
+    <div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+    <div class="cart-sidebar" id="cartSidebar">
+        <h2>🛒 Корзина</h2>
+        <button onclick="toggleCart()" style="float:right; background:none; border:none; font-size:24px; cursor:pointer;">✕</button>
+        <div id="cartItems"><p>Корзина пуста</p></div>
+        <h3>Итого: <span id="cartTotal">0</span> ₽</h3>
+        <button class="btn btn--primary" style="width:100%;" onclick="checkout()">Оформить заказ</button>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const products = [
+    // Обувь
+    { id: 1, name: 'Кроссовки Nike Air Zoom', category: 'shoes', price: 12990, oldPrice: 18990, discount: 32, image: 'shoes-1.jpg', badge: 'discount' },
+    { id: 2, name: 'Кроссовки Adidas Ultraboost', category: 'shoes', price: 14990, oldPrice: 19990, discount: 25, image: 'shoes-2.jpg', badge: null },
+    { id: 3, name: 'Бутсы Puma Future Z', category: 'shoes', price: 8990, oldPrice: 12990, discount: 31, image: 'shoes-3.jpg', badge: 'discount' },
+    { id: 4, name: 'Кеды Converse', category: 'shoes', price: 5990, oldPrice: null, discount: 0, image: 'shoes-4.jpg', badge: 'new' },
+    { id: 5, name: 'Кроссовки Reebok Nano', category: 'shoes', price: 10990, oldPrice: 14990, discount: 27, image: 'shoes-5.jpg', badge: 'discount' },
+    // Штаны
+    { id: 6, name: 'Джоггеры Nike', category: 'pants', price: 4990, oldPrice: 6990, discount: 29, image: 'pants-1.jpg', badge: 'discount' },
+    { id: 7, name: 'Шорты Adidas', category: 'pants', price: 2990, oldPrice: null, discount: 0, image: 'pants-2.jpg', badge: null },
+    { id: 8, name: 'Тайтсы UA', category: 'pants', price: 4490, oldPrice: 5990, discount: 25, image: 'pants-3.jpg', badge: 'discount' },
+    { id: 9, name: 'Штаны Puma', category: 'pants', price: 3990, oldPrice: null, discount: 0, image: 'pants-4.jpg', badge: 'new' },
+    // Верх
+    { id: 10, name: 'Футболка Adidas', category: 'tops', price: 2990, oldPrice: null, discount: 0, image: 'tops-1.jpg', badge: null },
+    { id: 11, name: 'Худи Nike Club', category: 'tops', price: 5990, oldPrice: 7990, discount: 25, image: 'tops-2.jpg', badge: 'discount' },
+    { id: 12, name: 'Футболка Puma', category: 'tops', price: 1990, oldPrice: 2990, discount: 33, image: 'tops-3.jpg', badge: 'discount' },
+    { id: 13, name: 'Толстовка Reebok', category: 'tops', price: 6990, oldPrice: null, discount: 0, image: 'tops-4.jpg', badge: 'new' },
+    // Аксессуары
+    { id: 14, name: 'Рюкзак Nike', category: 'accessories', price: 3990, oldPrice: 5490, discount: 27, image: 'acc-1.jpg', badge: 'discount' },
+    { id: 15, name: 'Бутылка Adidas', category: 'accessories', price: 1490, oldPrice: null, discount: 0, image: 'acc-2.jpg', badge: null },
+];
+
+        let cart = [];
+        let filterCat = 'all';
+
+        function saveCart() { localStorage.setItem('cart', JSON.stringify(cart)); }
+        function loadCart() { let saved = localStorage.getItem('cart'); if (saved) cart = JSON.parse(saved); }
+        
+        function addToCart(id) {
+            let item = cart.find(i => i.id === id);
+            if (item) item.qty++; else cart.push({id, qty: 1});
+            saveCart(); updateCartUI(); toast('✅ Добавлено!');
+        }
+
+        function updateCartUI() {
+            document.getElementById('cartCount').textContent = cart.reduce((s,i) => s+i.qty, 0);
+            let total = 0;
+            let html = '';
+            cart.forEach(item => {
+                let p = products.find(x => x.id === item.id);
+                total += p.price * item.qty;
+                html += `<div style="display:flex; gap:10px; margin:10px 0; align-items:center;">
+                    <span style="font-size:40px;">${p.icon}</span>
+                    <div style="flex:1;"><b>${p.name}</b><br>${p.price.toLocaleString()} ₽</div>
+                    <button onclick="changeQty(${item.id},-1)">-</button>
+                    <span>${item.qty}</span>
+                    <button onclick="changeQty(${item.id},1)">+</button>
+                </div>`;
+            });
+            document.getElementById('cartItems').innerHTML = html || '<p>Корзина пуста</p>';
+            document.getElementById('cartTotal').textContent = total.toLocaleString();
+        }
+
+        function changeQty(id, d) {
+            let item = cart.find(i => i.id === id);
+            item.qty += d;
+            if (item.qty <= 0) cart = cart.filter(i => i.id !== id);
+            saveCart(); updateCartUI();
+        }
+
+        function toggleCart() {
+            document.getElementById('cartSidebar').classList.toggle('active');
+            document.getElementById('cartOverlay').classList.toggle('active');
+        }
+
+        function checkout() {
+            if (cart.length === 0) { toast('🛒 Корзина пуста!'); return; }
+            toast('🎉 Заказ оформлен!');
+            cart = []; saveCart(); updateCartUI(); toggleCart();
+        }
+
+        function filter(cat) {
+            filterCat = cat;
+            document.querySelectorAll('.nav__link').forEach(a => a.classList.remove('active'));
+            event.target.classList.add('active');
+            render();
+        }
+
+        function showAll() {
+            filterCat = 'all';
+            document.querySelectorAll('.nav__link').forEach(a => a.classList.remove('active'));
+            document.querySelector('.nav__link').classList.add('active');
+            render();
+        }
+
+        function render() {
+            let filtered = products;
+            if (filterCat === 'sale') filtered = products.filter(p => p.badge === 'discount');
+            else if (filterCat !== 'all') filtered = products.filter(p => p.category === filterCat);
+            
+            document.getElementById('shoesGrid').innerHTML = filtered.filter(p=>p.category==='shoes').map(p => card(p)).join('');
+            document.getElementById('pantsGrid').innerHTML = filtered.filter(p=>p.category==='pants').map(p => card(p)).join('');
+            document.getElementById('topsGrid').innerHTML = filtered.filter(p=>p.category==='tops').map(p => card(p)).join('');
+            document.getElementById('accGrid').innerHTML = filtered.filter(p=>p.category==='accessories').map(p => card(p)).join('');
+        }
+
+        function card(p) {
+            let disc = p.badge === 'discount' ? `<span class="badge-discount">-${p.discount}%</span>` : '';
+            let n = p.badge === 'new' ? `<span class="badge-new">NEW</span>` : '';
+            let old = p.oldPrice ? `<span class="product-card__price-old">${p.oldPrice.toLocaleString()} ₽</span>` : '';
+            return `<div class="product-card">
+                <div class="product-card__image"><img src="${p.image}" alt="${p.name}" loading="lazy"></div>
+                <div class="product-card__image">${p.icon}</div>
+                <div class="product-card__body">
+                    <div class="product-card__title">${p.name}</div>
+                    <div class="product-card__price">
+                        <span class="product-card__price-current">${p.price.toLocaleString()} ₽</span>${old}
+                    </div>
+                </div>
+                <button class="product-card__btn" onclick="addToCart(${p.id})">🛒 В корзину</button>
+            </div>`;
+        }
+
+        function searchProducts() {
+            let q = document.getElementById('searchInput').value.toLowerCase();
+            let filtered = products.filter(p => p.name.toLowerCase().includes(q));
+            document.getElementById('shoesGrid').innerHTML = filtered.filter(p=>p.category==='shoes').map(p => card(p)).join('');
+            document.getElementById('pantsGrid').innerHTML = filtered.filter(p=>p.category==='pants').map(p => card(p)).join('');
+            document.getElementById('topsGrid').innerHTML = filtered.filter(p=>p.category==='tops').map(p => card(p)).join('');
+            document.getElementById('accGrid').innerHTML = filtered.filter(p=>p.category==='accessories').map(p => card(p)).join('');
+        }
+
+        function toast(msg) {
+            let t = document.getElementById('toast');
+            t.textContent = msg; t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2000);
+        }
+
+        loadCart(); updateCartUI(); render();
+    </script>
+</body>
+</html>
